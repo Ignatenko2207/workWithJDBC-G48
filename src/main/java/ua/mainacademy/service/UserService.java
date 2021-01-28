@@ -10,6 +10,6 @@ public class UserService {
     }
 
     public static User create(String login, String password, String firstName, String lastName) {
-        return UserDAO.create(login,password, firstName, lastName);
+        return UserDAO.save(login,password, firstName, lastName);
     }
 }

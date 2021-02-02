@@ -1,7 +1,6 @@
 package ua.mainacademy.dao;
 
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ua.mainacademy.model.User;
@@ -34,7 +33,7 @@ class UserDAOTest {
                 .firstName("firstName")
                 .lastName("lastName")
                 .build();
-        User savedUser = UserDAO.save(testUser.getLogin(), testUser.getPassword(), testUser.getFirstName(), testUser.getLastName());
+        User savedUser = UserDAO.save(testUser);
         users.add(savedUser);
         assertNotNull(savedUser.getId());
         assertEquals(testUser.getLogin(), savedUser.getLogin());
@@ -48,15 +47,21 @@ class UserDAOTest {
                 .firstName("firstName")
                 .lastName("lastName")
                 .build();
-        User savedUser = UserDAO.save(testUser.getLogin(), testUser.getPassword(), testUser.getFirstName(), testUser.getLastName());
-        User updatedUser = UserDAO.update(savedUser.getId(), "updatedLogin", testUser.getPassword(), testUser.getFirstName(), testUser.getLastName());
+        User savedUser = UserDAO.save(testUser);
+        User readyForUpdate = User.builder()
+                .id(savedUser.getId())
+                .login("updatedLogin")
+                .password("testPass")
+                .firstName("firstName")
+                .lastName("lastName")
+                .build();
+        User updatedUser = UserDAO.update(readyForUpdate);
         users.add(updatedUser);
         Optional<User> foundUser = UserDAO.findById(updatedUser.getId());
         if (foundUser.isPresent()) {
             assertNotEquals(savedUser.getLogin(), foundUser.get().getLogin());
             assertEquals(savedUser.getId(), foundUser.get().getId());
-        }
-        else {
+        } else {
             fail("Updated user was not found");
         }
     }
@@ -69,7 +74,7 @@ class UserDAOTest {
                 .firstName("firstName")
                 .lastName("lastName")
                 .build();
-        User savedUser = UserDAO.save(testUser.getLogin(), testUser.getPassword(), testUser.getFirstName(), testUser.getLastName());
+        User savedUser = UserDAO.save(testUser);
         users.add(savedUser);
         Optional<User> foundUser = UserDAO.findById(savedUser.getId());
         assertTrue(foundUser.isPresent());
@@ -83,7 +88,7 @@ class UserDAOTest {
                 .firstName("firstName")
                 .lastName("lastName")
                 .build();
-        User savedUser = UserDAO.save(testUser.getLogin(), testUser.getPassword(), testUser.getFirstName(), testUser.getLastName());
+        User savedUser = UserDAO.save(testUser);
         Optional<User> foundUser = UserDAO.findById(savedUser.getId());
         assertTrue(foundUser.isPresent());
         UserDAO.delete(savedUser.getId());

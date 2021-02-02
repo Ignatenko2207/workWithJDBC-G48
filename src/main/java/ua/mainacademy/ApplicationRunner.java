@@ -12,7 +12,13 @@ public class ApplicationRunner {
         String login = "alex2207";
         String password = "159159";
 
-        User user = UserService.create(login, password, "Ignatenko", "Alex");
+        User user = UserService.create(User.builder()
+                .login(login)
+                .password(password)
+                .firstName("Alex")
+                .lastName("Ignatenko")
+                .build()
+        );
 
         LOG.info(user.toString());
     }

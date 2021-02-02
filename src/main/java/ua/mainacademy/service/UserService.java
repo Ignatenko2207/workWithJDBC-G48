@@ -9,7 +9,7 @@ public class UserService {
         return UserDAO.getUserByLoginAndPassword(login, password);
     }
 
-    public static User create(String login, String password, String firstName, String lastName) {
-        return UserDAO.save(login,password, firstName, lastName);
+    public static User create(User user) {
+        return UserDAO.save(user);
     }
 }

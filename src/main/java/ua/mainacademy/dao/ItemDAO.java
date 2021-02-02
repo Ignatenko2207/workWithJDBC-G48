@@ -6,6 +6,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.Objects.isNull;
@@ -117,4 +119,39 @@ public class ItemDAO {
         }
     }
 
+    public static List<Item> findPayedItemsByUserAndPeriod(Integer userId, Long dateFrom, Long dateTo) {
+        List<Item> result = new ArrayList<>();
+        String sql = "" +
+                "SELECT i.* FROM items i " +
+                "JOIN orders o ON i.id=o.item_id " +
+                "JOIN carts c ON o.cart_id=c.id " +
+                "AND c.user_id=? " +
+                "WHERE c.creation_time>=? " +
+                "AND c.creation_time<=? " +
+                "AND c.status=1"; // cart must be closed
+        try (
+                Connection connection = ConnectionToDB.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        ) {
+            preparedStatement.setInt(1, userId);
+            preparedStatement.setLong(2, dateFrom);
+            preparedStatement.setLong(3, dateTo);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                Item item = Item.builder()
+                        .id(resultSet.getInt("id"))
+                        .name(resultSet.getString("name"))
+                        .itemCode(resultSet.getString("item_code"))
+                        .price(resultSet.getInt("price"))
+                        .initPrice(resultSet.getInt("init_price"))
+                        .build();
+                result.add(item);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+
+    }
 }
